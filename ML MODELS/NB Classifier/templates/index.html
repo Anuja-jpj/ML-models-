@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Campus Message Detective</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+            background: white;
+            border-radius: 18px;
+            padding: 35px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .icon {
+            font-size: 45px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            color: #1f2937;
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            font-size: 15px;
+        }
+
+        .input-section {
+            margin-top: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            color: #374151;
+            margin-bottom: 10px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+            resize: vertical;
+            font-size: 15px;
+            font-family: Arial, sans-serif;
+            outline: none;
+        }
+
+        textarea:focus {
+            border-color: #6366f1;
+        }
+
+        .example {
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 10px;
+            margin-top: 10px;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .button {
+            width: 100%;
+            margin-top: 18px;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: #4f46e5;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background: #4338ca;
+        }
+
+        .result {
+            margin-top: 25px;
+            padding: 22px;
+            border-radius: 14px;
+            background: #f8fafc;
+            text-align: center;
+        }
+
+        .result-title {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        .prediction {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .important {
+            color: #15803d;
+        }
+
+        .promotional {
+            color: #dc2626;
+        }
+
+        .confidence {
+            font-size: 16px;
+            color: #374151;
+            margin-top: 8px;
+        }
+
+        .probabilities {
+            margin-top: 18px;
+            text-align: left;
+        }
+
+        .probability-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        .message-display {
+            margin-top: 18px;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            color: #4b5563;
+            font-size: 14px;
+            text-align: left;
+            word-wrap: break-word;
+        }
+
+        .error {
+            margin-top: 20px;
+            padding: 14px;
+            border-radius: 10px;
+            background: #fee2e2;
+            color: #b91c1c;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            color: #9ca3af;
+            font-size: 12px;
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+
+        <div class="icon">📩</div>
+
+        <h1>Campus Message Detective</h1>
+
+        <p class="subtitle">
+            Naive Bayes powered message classification
+        </p>
+
+    </div>
+
+
+    <form action="/predict" method="POST">
+
+        <div class="input-section">
+
+            <label for="message">
+                Enter your message
+            </label>
+
+            <textarea
+                id="message"
+                name="message"
+                placeholder="Example: Submit your assignment before Friday..."
+                required>{{ message if message else "" }}</textarea>
+
+            <div class="example">
+                <strong>Examples:</strong><br>
+                📚 "Submit your assignment before Friday."
+                <br>
+                🎁 "Congratulations! Claim your free gift now."
+                <br>
+                📢 "The placement aptitude test starts at 9 AM."
+            </div>
+
+        </div>
+
+        <button type="submit" class="button">
+            🔍 Detect Message
+        </button>
+
+    </form>
+
+
+    {% if prediction %}
+
+    <div class="result">
+
+        <div class="result-title">
+            Prediction Result
+        </div>
+
+        {% if prediction == "Important" %}
+
+            <div class="prediction important">
+                ✓ IMPORTANT
+            </div>
+
+        {% else %}
+
+            <div class="prediction promotional">
+                ⚡ PROMOTIONAL
+            </div>
+
+        {% endif %}
+
+
+        <div class="confidence">
+
+            Model Confidence:
+            <strong>{{ confidence }}%</strong>
+
+        </div>
+
+
+        {% if probabilities %}
+
+        <div class="probabilities">
+
+            {% for class_name, probability in probabilities.items() %}
+
+            <div class="probability-row">
+
+                <span>
+                    {{ class_name }}
+                </span>
+
+                <strong>
+                    {{ probability }}%
+                </strong>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+        {% endif %}
+
+
+        {% if message %}
+
+        <div class="message-display">
+
+            <strong>Your Message:</strong>
+
+            <br><br>
+
+            {{ message }}
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+    {% endif %}
+
+
+    {% if error %}
+
+    <div class="error">
+        {{ error }}
+    </div>
+
+    {% endif %}
+
+
+    <div class="footer">
+
+        Campus Message Detective •
+        Multinomial Naive Bayes
+
+    </div>
+
+</div>
+
+</body>
+
+</html>
