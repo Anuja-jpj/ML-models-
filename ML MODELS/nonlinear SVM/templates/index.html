@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Banknote Authentication - Non-linear SVM</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; background: #eef2f7; margin: 0; padding: 30px 15px; }
+    .container { max-width: 480px; margin: auto; background: white; padding: 28px; border-radius: 14px; box-shadow: 0 5px 20px #00000015; }
+    h1 { text-align: center; color: #243b63; font-size: 25px; }
+    p { text-align: center; color: #666; }
+    label { display: block; margin-top: 16px; font-weight: bold; color: #333; }
+    input { width: 100%; padding: 12px; margin-top: 7px; border: 1px solid #ccd3df; border-radius: 7px; font-size: 15px; }
+    button { width: 100%; margin-top: 24px; padding: 13px; background: #3159a6; color: white; border: none; border-radius: 7px; font-size: 16px; cursor: pointer; }
+    button:hover { background: #244582; }
+    .result { margin-top: 20px; padding: 14px; text-align: center; border-radius: 8px; background: #e6f5e9; color: #176534; font-weight: bold; }
+    .error { background: #fde8e8; color: #a11; }
+    footer { text-align: center; margin-top: 22px; color: #777; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Banknote Authentication</h1>
+    <p>Non-linear SVM Classification Model (RBF Kernel)</p>
+    <form method="POST">
+      <label for="variance">Variance</label>
+      <input type="number" step="any" id="variance" name="variance" value="{{ request.form.get('variance', '') }}" placeholder="e.g. 3.6216" required>
+      <label for="skewness">Skewness</label>
+      <input type="number" step="any" id="skewness" name="skewness" value="{{ request.form.get('skewness', '') }}" placeholder="e.g. 8.6661" required>
+      <label for="curtosis">Curtosis</label>
+      <input type="number" step="any" id="curtosis" name="curtosis" value="{{ request.form.get('curtosis', '') }}" placeholder="e.g. -2.8073" required>
+      <label for="entropy">Entropy</label>
+      <input type="number" step="any" id="entropy" name="entropy" value="{{ request.form.get('entropy', '') }}" placeholder="e.g. -0.44699" required>
+      <button type="submit">Check Banknote</button>
+    </form>
+    {% if prediction %}<div class="result">Prediction: {{ prediction }}</div>{% endif %}
+    {% if error %}<div class="result error">{{ error }}</div>{% endif %}
+    <footer>Experiment No. 09 | Non-linear SVM</footer>
+  </div>
+</body>
+</html>
